@@ -46,7 +46,13 @@ git pull
 popd
 
 # query the jss for package list and start logging
+# check to see if the jss_helper doesn't grab info from the JSS for some reason. If it does, it will copy the previous days file
+# so we don't get output to hipchat for all packages
 jss_helper package > "$currPackageList"
+if [ ! -s "$currPackageList" ]; then
+	cp "$arcPackageList" "$currPackageList"
+fi
+
 echo $(date) >> "$packageLog"
 echo "********************************************" >> "$packageLog"
 curl -d '{"color":"gray","message":"***************'"$tdate"' '"$computerName"'***************","notify":false,"message_format":"text"}' -H 'Content-Type: application/json' https://hipchat.server.com/v2/room/###/notification?auth_token=<auth token>
