@@ -58,7 +58,7 @@ echo "********************************************" >> "$packageLog"
 curl -d '{"color":"gray","message":"***************'"$tdate"' '"$computerName"'***************","notify":false,"message_format":"text"}' -H 'Content-Type: application/json' https://hipchat.server.com/v2/room/###/notification?auth_token=<auth token>
 
 # find differences in packages from the previous day to find new packages
-diff -yB --suppress-common-lines "$currPackageList" "$arcPackageList" > "$diffPackageList"
+diff -yB --width=200 --suppress-common-lines "$currPackageList" "$arcPackageList" > "$diffPackageList"
 
 # read differences, determine title and version and add them into an array
 newPackages=($(awk -F ': ' '{print $3}' "$diffPackageList"))
