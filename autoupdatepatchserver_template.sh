@@ -9,6 +9,9 @@ OldIFS="$IFS"
 IFS=$'\n'
 currUser=$( ls -l /dev/console | awk '{print $3}' )
 
+# slack server
+slackServer="https://hooks.slack.com/services/THXXXXXXX/BLXXXXXXX/XXXXXXXXXXXXXXXXXXXXXXXX"
+
 # time variables
 timestamp=$(date "+%Y-%m-%dT%H:%M:%SZ")
 tdate=$(date "+%Y-%m-%d")
@@ -22,6 +25,11 @@ currPackageList=""$basePath"/$tdate-Package-List.txt"
 arcPackageList=""$basePath"/$ydate-Package-List.txt"
 diffPackageList=""$basePath"/New-Package-List.txt"
 packageLog=""$basePath"/newPackage.log"
+
+# notifications
+SlackNotification() {
+	curl ${slackServer} --silent --data-urlencode "${payload}"
+}
 
 # create files if they don't exist
 if [[ ! -e "$currPackageList" ]]; then
@@ -46,19 +54,14 @@ git pull
 popd
 
 # query the jss for package list and start logging
-# check to see if the jss_helper doesn't grab info from the JSS for some reason. If it does, it will copy the previous days file
-# so we don't get output to hipchat for all packages
 jss_helper package > "$currPackageList"
-if [ ! -s "$currPackageList" ]; then
-	cp "$arcPackageList" "$currPackageList"
-fi
-
 echo $(date) >> "$packageLog"
 echo "********************************************" >> "$packageLog"
-curl -d '{"color":"gray","message":"***************'"$tdate"' '"$computerName"'***************","notify":false,"message_format":"text"}' -H 'Content-Type: application/json' https://hipchat.server.com/v2/room/###/notification?auth_token=<auth token>
+payload="payload={\"text\": \"***************"$tdate" "$computerName"***************\"}"
+SlackNotification
 
 # find differences in packages from the previous day to find new packages
-diff -yB --width=200 --suppress-common-lines "$currPackageList" "$arcPackageList" > "$diffPackageList"
+diff -yB --suppress-common-lines "$currPackageList" "$arcPackageList" > "$diffPackageList"
 
 # read differences, determine title and version and add them into an array
 newPackages=($(awk -F ': ' '{print $3}' "$diffPackageList"))
@@ -88,16 +91,22 @@ while [[ $iter -ge 0 ]]; do
 	echo "$updateJson"" ""$verJson" >> $packageLog
 
 # recursively substitute %20 in place of spaces to find correct json file
-# %20 is needed in place of spaces on the patch server for ID
-	while [[ "$updateJson" =~ " " ]]; do
-		updateJson=${updateJson/" "/%20}
+# %20 is needed in place of spaces on the patch server for ID. Also removes the space if the
+# %20 named file doesn't exist
+	while [[ "$revJson" =~ " " ]]; do
+		revJson=${revJson/" "/%20}
+			if [[ -z $(find /Users/"$currUser"/Documents/GitHub/JAMF_Patch_Server/ -iname "$revJson"*update*) ]];then
+				revJson=${revJson/"%20"/""}
+			fi
 	done
+
 
 # find json file and old date, version and replace them with new date and version
 
 	softJson=$(find /path/to/git/repo/ -iname "$updateJson"*update*) > /dev/null
 	echo "$softJson"
 	if [[ "$softJson" != "" ]]; then
+		payload="payload={\"text\": \""$tdate" : *"${softTitle[$iter]}"* *"$verJson"* has been updated on the patch server\"}"
 		oldVer=$( cat "$softJson" | grep -m 1 version | awk '{print $2}')
 
 		oldDate=$( cat "$softJson" | grep -m 1 releaseDate | awk '{print $2}')
@@ -105,10 +114,11 @@ while [[ $iter -ge 0 ]]; do
 		sed -i '' -e "s|$oldVer|\"${softVer[$iter]}\",|g" "$softJson"
 		sed -i '' -e "s|$oldDate|\"$timestamp\",|g" "$softJson"
 		curl --http1.1 -H "Content-Type: application/json" http://your.patchserver.com:5000/api/v1/title/"$revJson"/version -T "$softJson" -X POST
-		curl -d '{"color":"green","message":"'"$revJson"' '"$verJson"' has been updated on the patch server","notify":false,"message_format":"text"}' -H 'Content-Type: application/json' https://hipchat.server.com/v2/room/###/notification?auth_token=<auth token>
+		SlackNotification
 		echo "${softTitle[$iter]}"" has been updated" >> $packageLog
 	else
-		curl -d '{"color":"green","message":"'"$tdate"' : '"$revJson"' '"$verJson"' has updated. Please update patch definitions manually.","notify":false,"message_format":"text"}' -H 'Content-Type: application/json' https://hipchat.server.com/v2/room/###/notification?auth_token=<auth token>
+		payload="payload={\"text\": \""$tdate" : *"${softTitle[$iter]}"* *"$verJson"* has updated. Please update patch definitions manually\"}"
+		SlackNotification
 		echo "${softTitle[$iter]}"" does not have a patch definition" >> $packageLog
 	fi
 	iter=$(( iter - 1 ))
