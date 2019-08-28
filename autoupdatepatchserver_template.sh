@@ -95,10 +95,10 @@ while [[ $iter -ge 0 ]]; do
 # %20 named file doesn't exist
 	while [[ "$revJson" =~ " " ]]; do
 		revJson=${revJson/" "/%20}
-			if [[ -z $(find /Users/"$currUser"/Documents/GitHub/JAMF_Patch_Server/ -iname "$revJson"*update*) ]];then
-				revJson=${revJson/"%20"/""}
-			fi
 	done
+	if [[ -z $(find /Users/"$currUser"/Documents/GitHub/JAMF_Patch_Server/ -iname "$revJson"*update*) ]];then
+		revJson=${revJson/"%20"/""}
+	fi
 
 
 # find json file and old date, version and replace them with new date and version
