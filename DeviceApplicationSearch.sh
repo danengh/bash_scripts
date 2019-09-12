@@ -21,7 +21,7 @@ JSSCredentials() {
 if [[ -z $1 ]]; then
 	read -p "Enter a Jamf Pro host name. example: oit-jss.oit.umn.edu: " jssEntry
     if [[ "$jssEntry" == "" ]]; then
-        echo "Jamf server not recognized. Please provide a Jamf URL host name. example: oit-jss.oit.umn.edu"
+        echo "Jamf server not recognized. Please provide a Jamf URL host name. example: myjss.mycompany.com"
         exit 1
 	else
 		jss="https://"$jssEntry":8443/JSSResource"
