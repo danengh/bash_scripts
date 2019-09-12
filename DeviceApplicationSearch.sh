@@ -19,7 +19,7 @@ currentUser=$( ls -l /dev/console | awk '{print $3}' )
 # Get the JSS Server location along with credentials. If wanted, a plist can be created so that credentials can be stored and not re-entered every time.
 JSSCredentials() {
 if [[ -z $1 ]]; then
-	read -p "Enter a Jamf Pro host name. example: oit-jss.oit.umn.edu: " jssEntry
+	read -p "Enter a Jamf Pro host name. example: myjss.mycompany.com: " jssEntry
     if [[ "$jssEntry" == "" ]]; then
         echo "Jamf server not recognized. Please provide a Jamf URL host name. example: myjss.mycompany.com"
         exit 1
