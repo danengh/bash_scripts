@@ -4,7 +4,20 @@
 # This is designed to be run locally as a logged in user with the terminal (or other similar) application.
 # This can create a preference file for future use for each Jamf Pro Server.
 # A single Jamf Pro Server parameter is required and will exit with message if not provided.
-# Created by Dan Engh and added to GitHub 9/16/209
+# Created by Dan Engh and added to GitHub 9/16/2019
+
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 ## Variables ##
 # Do not change these
