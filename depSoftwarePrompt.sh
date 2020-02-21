@@ -18,6 +18,9 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+# variables
+tempFilePath = ""
+
 #Wait for user session
 userSession="No"
 
@@ -33,11 +36,11 @@ done
 #Create empty array and txt of software titles
 
 softwareArray=()
-mkdir -p /Library/Application\ Support/UMN/
-touch /Library/Application\ Support/UMN/softwareList.txt
-chmod 777 /Library/Application\ Support/UMN/softwareList.txt
-echo "Install all the following or customize:" >> /Library/Application\ Support/UMN/softwareList.txt
-echo "" >> /Library/Application\ Support/UMN/softwareList.txt
+mkdir -p "$tempFilePath"
+touch "$tempFilePath"/softwareList.txt
+chmod 777 "$tempFilePath"/softwareList.txt
+echo "Install all the following or customize:" >> "$tempFilePath"/softwareList.txt
+echo "" >> "$tempFilePath"/softwareList.txt
 titleCount=$#
 separator=1
 
@@ -49,15 +52,15 @@ done
 
 for events in "${@:4}"; do
 	if [[ "$events" != "" ]]; then
-		echo -n "$events" >> /Library/Application\ Support/UMN/softwareList.txt
+		echo -n "$events" >> "$tempFilePath"/softwareList.txt
 	fi
 	if [[ $separator -lt $titleCount ]] && [[ "$events" != "" ]]; then
-		echo -n ", " >> /Library/Application\ Support/UMN/softwareList.txt
+		echo -n ", " >> "$tempFilePath"/softwareList.txt
 	fi
 	separator=$((separator+1))
 done
 
-softwareList=$(cat /Library/Application\ Support/UMN/softwareList.txt)
+softwareList=$(cat "$tempFilePath"/softwareList.txt)
 
 #Use Jamf Helper to find out if they want to install everything or customize
 i=0
@@ -105,5 +108,5 @@ else
 	fi
 fi
 
-rm -rf /Library/Application\ Support/UMN/softwareList.txt
+rm -rf "$tempFilePath"
 jamf recon
