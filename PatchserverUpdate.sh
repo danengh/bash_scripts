@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 # update the patch server using curl
 # Copyright (C) 2019  Dan Engh
