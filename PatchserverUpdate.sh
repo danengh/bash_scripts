@@ -73,18 +73,18 @@ if [[ $1 == "--update" ]]; then
 			exit 1
 		fi
 	fi
-	curl --http1.1 -H "Content-Type: application/json" -H 'Authorization: Bearer "'{$APIKey}'"' "$server"/$2/version -T "$xmlLocation""$2""$updateDefinitionScheme".json -X POST
+	curl --http1.1 -H "Content-Type: application/json" -H "Authorization: Bearer "$APIKey"" "$server"/$2/version -T "$xmlLocation""$2""$updateDefinitionScheme".json -X POST
 elif [[ $1 == "--create" ]]; then
 	# FileCheck
-	curl --http1.1 -H "Content-Type: application/json" -H 'Authorization: Bearer "'{$APIKey}'"' "$server" -T "$xmlLocation""$2""$newDefinitionScheme".json -X POST
+	curl --http1.1 -H "Content-Type: application/json" -H "Authorization: Bearer "$APIKey"" "$server" -T "$xmlLocation""$2""$newDefinitionScheme".json -X POST
 elif [[ $1 == "--before" ]]; then
 	# FileCheck
-	curl --http1.1 -H "Content-Type: application/json" -H 'Authorization: Bearer "'{$APIKey}'"' "$server"/$2/version?insert_before="$3" -T "$xmlLocation""$2""$updateDefinitionScheme".json -X POST
+	curl --http1.1 -H "Content-Type: application/json" -H "Authorization: Bearer "$APIKey"" "$server"/$2/version?insert_before="$3" -T "$xmlLocation""$2""$updateDefinitionScheme".json -X POST
 elif [[ $1 == "--after" ]]; then
 	# FileCheck
-	curl --http1.1 -H "Content-Type: application/json" -H 'Authorization: Bearer "'{$APIKey}'"' "$server"/$2/version?insert_after="$3" -T "$xmlLocation""$2""$updateDefinitionScheme".json -X POST
+	curl --http1.1 -H "Content-Type: application/json" -H "Authorization: Bearer "$APIKey"" "$server"/$2/version?insert_after="$3" -T "$xmlLocation""$2""$updateDefinitionScheme".json -X POST
 elif [[ $1 == "--delete" ]]; then
-	curl --http1.1 -H "Content-Type: application/json" -H 'Authorization: Bearer "'{$APIKey}'"' "$server"/$2 -X DELETE
+	curl --http1.1 -H "Content-Type: application/json" -H "Authorization: Bearer "$APIKey"" "$server"/$2 -X DELETE
 else
 	PatchUsage
 fi
